@@ -4,7 +4,7 @@ m <- read.table("movies.tab", sep="\t", header=TRUE, quote="", comment="")
 str(m)
 genres <- c("Action", "Animation", "Comedy", "Drama", "Documentary", "Romance", "Short")
 
-for(i in length(genres))
+for(i in 1:length(genres))
 {
   m[[genres[i]]]<- as.factor(m[[genres[i]]])
 }
@@ -23,9 +23,9 @@ queryfunc <- function(data, genre=NULL,anfangsjahr=1800, endjahr=2100) {
   if(is.double(anfangsjahr)&is.double(endjahr)){
     tmp <- subset(tmp,anfangsjahr<=tmp$year & tmp$year<=endjahr)
   }
-#  if(is.double(dauer)){
-#   tmp <- subset(tmp,tmp$length<=dauer)
-# }
+  #  if(is.double(dauer)){
+  #   tmp <- subset(tmp,tmp$length<=dauer)
+  # }
   return(tmp)
 }
 (output <- queryfunc(m, NULL, 1980, 2000))
@@ -66,7 +66,6 @@ plot(m$year,m$length, las=1, xlab="Jahre", ylab="Filml?nge", main="Jahre gegen F
      ylim=c(0,400), pch=16, cex=0.5, col="2", cex.main=2, cex.lab=1.5)
 
 par(mfrow=c(3,3))
-par(mfrow=c(1,1))
 
 plot(nurAction$year, nurAction$length,           main="Länge der Actionfilme",     
      cex.main=2, xlab="Jahre", ylab="L?nge", cex.lab=1.5, las=1, pch=16, cex=0.4, col=4)
@@ -197,7 +196,6 @@ LinMod(action80$rating, action80$length, action80$votes)
 LinMod(millenium$rating, millenium$length, millenium$votes)
 LinMod(nineties$rating, nineties$length, nineties$votes)
 LinMod(eighties$rating, eighties$length, eighties$votes)
-
 
 
 
