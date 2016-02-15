@@ -9,17 +9,25 @@ shinyUI(fluidPage(
   # Sidebar with a slider input for the number of bins
   sidebarLayout(
     sidebarPanel(
-      sliderInput("bins",
-                  "Number of bins:",
-                  min = 1,
-                  max = 50,
-                  value = 30)
+
+      sliderInput("JahrRange", label = "Range:",
+                  min = 1900, max = 2005, value = c(1990,2000)),
+      
+      selectInput("Genre", label = "Genre:", 
+                  choices = list("Action" = "Action", 
+                                 "Animation" = "Animation", "Comedy"= "Comedy",
+                                 "Drama" = "Drama", "Documentary" = "Documentary", 
+                                 "Romance" = "Romance", "Short" = "Short"
+                                   ))
     ),
     
     # Show a plot of the generated distribution
     mainPanel(
-      plotOutput("distPlot"),
-      verbatimTextOutput("text")
+      plotOutput("ImdbPlot"),
+      textOutput("genre"),
+      textOutput("jahre"),
+      textOutput("test")
     )
+    
   )
 ))

@@ -6,7 +6,7 @@ factorfunc <- function(data, genres){
   return (data)
 }
 
-queryfunc <- function(data, genre=NULL,anfangsjahr=1800, endjahr=2100) {
+queryfunc <- function(data, genre=NULL,anfangsjahr, endjahr) {
   tmp <- data
   if(is.character(genre)){
     tmp <- subset(tmp,tmp[[genre]]==1)

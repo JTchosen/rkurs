@@ -13,7 +13,7 @@ shinyServer(function(input, output) {
   data <- read.table("movies.tab", sep="\t", header=TRUE, quote="", comment="")
   genres <- c("Action", "Animation", "Comedy", "Drama", "Documentary", "Romance", "Short")
   data <- factorfunc(data, genres)
-  subset <- queryfunc(data, "Action", 2000, 2010)
+  #subset <- queryfunc(data, "Action", {input$rangeSlider[1]}, {input$rangeSlider[2]})
   
   output$distPlot <- renderPlot({
     x    <- faithful[, 2]  # Old Faithful Geyser data
@@ -23,5 +23,13 @@ shinyServer(function(input, output) {
     hist(x, breaks = bins, col = 'darkgray', border = 'white')
   })
   
-  output$text <- renderPrint({str(data)})
+   output$ImdbPlot <- renderPlot({
+     #data <- queryfunc(data, input$Genre, {input$JahrRange[1]}, {input$JahrRange[2]})
+     data <- subset(data, {input$JahrRange[1]}<=data$year&data$year<={input$JahrRange[2]}&data[[input$Genre]]==1)
+     plot(data$year, data$length)
+   })
+  
+  output$jahre <- renderPrint({input$JahrRange})
+  output$genre <- renderPrint({input$Genre})
+  output$test <- renderPrint({str(data)})
 })
