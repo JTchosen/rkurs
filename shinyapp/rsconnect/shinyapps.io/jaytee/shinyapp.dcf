@@ -1,0 +1,8 @@
+name: shinyapp
+account: jaytee
+server: shinyapps.io
+bundleId: 373768
+url: https://jaytee.shinyapps.io/shinyapp/
+when: 1455588470.31133
+asMultiple: FALSE
+asStatic: FALSE
