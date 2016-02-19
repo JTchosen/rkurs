@@ -11,32 +11,40 @@ shinyUI(fluidPage(
     sidebarPanel(
 
       sliderInput("JahrRange", label = "Zeitspanne:",
-                  min = 1900, max = 2005, value = c(1990,2000)),
+                  min = 1893, max = 2005, value = c(1960,2000)),
       
       selectInput("Genre", label = "Genre:", 
-                  choices = list("Action" = "Action", 
+                  choices = list("Alle" = "Alle","Action" = "Action", 
                                  "Animation" = "Animation", "Comedy"= "Comedy",
                                  "Drama" = "Drama", "Documentary" = "Documentary", 
                                  "Romance" = "Romance", "Short" = "Short"
                                    )),
       
       sliderInput("LengthRange", label = "Filmdauer:",
-                  min = 1, max = 300, value = c(80,120))
+                  min = 1, max = 300, value = c(70,120)),
+      
+      sliderInput("RatingRange", label = "Rating:",
+                  min = 1, max = 10, value = c(1,10))
     ),
     
     # Show a plot of the generated distribution
     mainPanel(
       tabsetPanel(
-        tabPanel("Jahr/Laenge", plotOutput("ImdbJahrLaenge"), "Durchschnittslaenge
-                 und Median der Laenge sind:"), 
+        tabPanel("Jahr/Laenge", plotOutput("ImdbJahrLaenge"), 
+                "Durchschnittslaenge
+                 und Median der Laenge sind:", 
+                 tableOutput("statLength")
+        ),
+        
         tabPanel("Jahr/Rating", plotOutput("ImdbJahrRating")),
         tabPanel("Jahr/Budget", plotOutput("ImdbJahrBudget")),
         tabPanel("Budget/Rating", plotOutput("ImdbBudgetRating")),
-        tabPanel("Length/Rating", plotOutput("ImdbLengthRating")),
-        tabPanel("Analyse", textOutput("budget"))
+        tabPanel("Jahre/Haeufigkeit", plotOutput("ImdbJahreHaeufigkeit")),
+        tabPanel("Rating/Haeufigkeit", tableOutput("ImdbRatingHaeufigkeit")),
+        tabPanel("Analyse", tableOutput("Analyse"))
       ),
-      tags$hr(),
-      tableOutput("textInfo")
+      tags$hr()
+      
       #textOutput("budget")
       #textOutput("genre"),
     )
