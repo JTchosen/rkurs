@@ -9,7 +9,7 @@ for(i in 1:length(genres))
   m[[genres[i]]]<- as.factor(m[[genres[i]]])
 }
 
-str(m)
+	
 
 summary(m)
 

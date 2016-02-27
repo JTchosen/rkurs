@@ -11,7 +11,7 @@ shinyUI(fluidPage(
     sidebarPanel(
 
       sliderInput("JahrRange", label = "Zeitspanne:",
-                  min = 1893, max = 2005, value = c(1960,2000)),
+                  min = 1893, max = 2005, value = c(1900,2000)),
       
       selectInput("Genre", label = "Genre:", 
                   choices = list("Alle" = "Alle","Action" = "Action", 
@@ -21,7 +21,7 @@ shinyUI(fluidPage(
                                    )),
       
       sliderInput("LengthRange", label = "Filmdauer:",
-                  min = 1, max = 300, value = c(70,120)),
+                  min = 1, max = 300, value = c(30,120)),
       
       sliderInput("RatingRange", label = "Rating:",
                   min = 1, max = 10, value = c(1,10))
@@ -31,20 +31,24 @@ shinyUI(fluidPage(
     mainPanel(
       tabsetPanel(
         tabPanel("Jahr/Laenge", plotOutput("ImdbJahrLaenge"), 
-                "Durchschnittslaenge
-                 und Median der Laenge sind:", 
+                "Durchschnittliche Filmlaenge des jeweiligen Jahrzehntes ist:", 
                  tableOutput("statLength")
         ),
         
-        tabPanel("Jahr/Rating", plotOutput("ImdbJahrRating")),
-        tabPanel("Jahr/Budget", plotOutput("ImdbJahrBudget")),
+        tabPanel("Jahr/Rating", plotOutput("ImdbJahrRating"), 
+                "Durchschnittliches Rating des jeweiligen Jahrzehntes ist:", 
+                tableOutput("statRating")),
+        
+        tabPanel("Jahr/Budget", plotOutput("ImdbJahrBudget"),
+                 "Durchschnittliches Budget des jeweiligen Jahrzehntes ist:", 
+                 tableOutput("statBudget")),
         tabPanel("Budget/Rating", plotOutput("ImdbBudgetRating")),
         tabPanel("Jahre/Haeufigkeit", plotOutput("ImdbJahreHaeufigkeit")),
         tabPanel("Rating/Haeufigkeit", tableOutput("ImdbRatingHaeufigkeit")),
-        tabPanel("Analyse", tableOutput("Analyse"))
+        tabPanel("Analyse", tableOutput("AnalyseText"), plotOutput("AnalysePlot"))
       ),
       tags$hr()
-      
+      #
       #textOutput("budget")
       #textOutput("genre"),
     )
