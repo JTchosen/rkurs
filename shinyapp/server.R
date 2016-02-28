@@ -1,8 +1,8 @@
 library(shiny)
 source("funcs.R")
-# Define server logic required to draw a histogram
 
-data <- read.table("movies.tab", sep="\t", header=TRUE, quote="", comment="")
+#Import Data, Define Possible Genres and transform the genres to Factors.
+data <- read.table("movies.tab", sep="\t", header=TRUE, quote="", comment="",fileEncoding="UTF-8")
 genres <- c("Action", "Animation", "Comedy", "Drama", "Documentary", "Romance", "Short")
 data <- factorfunc(data, genres)
 decades <- seq(1900, 1990, length.out=10)
@@ -10,7 +10,7 @@ decades <- seq(1900, 1990, length.out=10)
 shinyServer(function(input, output) {
   
   #Generische Funktion um den Datensatz entsprechend der im UI 
-  #festgelegten Kriterien zu fi ltern  
+  #festgelegten Kriterien zu filtern  
   queryfunc <- function(data, genre="Alle", anfangsjahr=1893, endjahr=2005, mindauer=1, maxdauer=10000, minrating=1, maxrating=10) {
     if(genre=="Alle"){
       tmp <- subset(data, anfangsjahr<=data$year&data$year<=endjahr&
@@ -23,6 +23,7 @@ shinyServer(function(input, output) {
     return(tmp)
   }
   
+  #Wird genutzt um die Daten in Jahrzehnte einzuteilen
   yearFilter <- function(data, anfangsjahr, endjahr){
     tmp <- subset(data, anfangsjahr<=data$year&data$year<=endjahr)
     return (tmp)
@@ -35,31 +36,31 @@ shinyServer(function(input, output) {
   #Vorher wird der Datensatz aber anhand der im UI festgelegten Kriterien gefiltert
   #Shiny aktualisiert den Datensatz bei jeder Aenderung der Filterkriterien.
    output$ImdbJahrLaenge <- renderPlot({
-     #data <- subset(data, {input$JahrRange[1]}<=data$year&data$year<={input$JahrRange[2]}&data[[input$Genre]]==1)
      varjl <- queryfunc(data, input$Genre, input$JahrRange[1], input$JahrRange[2],
                         input$LengthRange[1], input$LengthRange[2],
                         input$RatingRange[1], input$RatingRange[2])
      fm <- lm(varjl$length ~ varjl$year)
-     plot(varjl$year, varjl$length, pch=16, xlab="Jahre", ylab="Filmlaenge", main="Jahre/Filmlaenge", cex=0.6)
+     plot(varjl$year, varjl$length, pch=16, xlab="Jahre", ylab="Filmlänge", main="Jahre/Filmlänge", cex=0.6)
      abline(fm, col = "red")
    })
    
-  
+  #Berechnet die durchschnittliche Filmlänge je Jahrzehnt, nicht abhängig von Input sondern gibt einen allgemeinen Überblick
   output$statLength <- renderTable({
     averages <- c(1:10)
     for(i in 1:10){
+      #Filtert das entsprechende Jahrzehnt und berechnet den Durchschnitt der Filmlänge
       filteredData <- yearFilter(data, decades[i], decades[i]+10)
       averages[i] <- mean(filteredData$length)
     }
     df <- data.frame(
-      year=decades,
-      mean=averages
+      Dekade=decades,
+      Durchschnitt=averages
     )
   })
   
   #--------------------------------------------------------------
+  #Stellt den Verlauf der Ratings nach Jahren dar. Auch hier wird der Graph an die Inputwertde der ui datei angepasst
    output$ImdbJahrRating <- renderPlot({
-     #data <- subset(data, {input$JahrRange[1]}<=data$year&data$year<={input$JahrRange[2]}&data[[input$Genre]]==1)
      varjr <- queryfunc(data, input$Genre, input$JahrRange[1], input$JahrRange[2],
                         input$LengthRange[1], input$LengthRange[2],
                         input$RatingRange[1], input$RatingRange[2])
@@ -67,7 +68,7 @@ shinyServer(function(input, output) {
      plot(varjr$year, varjr$rating, pch=16, xlab="Jahre", ylab="Rating", main="Jahre/Rating", cex=0.6)
      abline(fm, col = "red")
    })
-   
+   #Gleiches Vorgehen wie bei der Filmlänge
   output$statRating <- renderTable({
     averages <- c(1:10)
     for(i in 1:10){
@@ -75,14 +76,13 @@ shinyServer(function(input, output) {
       averages[i] <- mean(filteredData$rating)
     }
     df <- data.frame(
-      year=decades,
-      mean=averages
+      Dekade=decades,
+      Durchschnitt=averages
     )
   })
   #--------------------------------------------------------------
-  
+  #Stellt den Verlauf der Budgets über die Jahr dar. Viele Titel haben nur eine Angabe NA, deshalb diese rausfiltern
    output$ImdbJahrBudget <- renderPlot({
-     #data <- subset(data, {input$JahrRange[1]}<=data$year&data$year<={input$JahrRange[2]}&data[[input$Genre]]==1)
      varjr <- queryfunc(data, input$Genre, input$JahrRange[1], input$JahrRange[2],
                         input$LengthRange[1], input$LengthRange[2],
                         input$RatingRange[1], input$RatingRange[2])
@@ -90,6 +90,7 @@ shinyServer(function(input, output) {
      plot(varjr$year, varjr$budget, pch=16, xlab="Jahre", ylab="Budget", main="Jahre/Budget", cex=0.6)
    })
   
+  #Gleiches Vorgehen wie bisher. Auch hier die NA Werte herausfiltern
   output$statBudget <- renderTable({
     averages <- c(1:10)
     for(i in 1:10){
@@ -97,40 +98,41 @@ shinyServer(function(input, output) {
       averages[i] <- mean(filteredData$budget, na.rm=TRUE)
     }
     df <- data.frame(
-      year=decades,
-      mean=averages
+      Dekade=decades,
+      Durchschnitt=averages
     )
   })
    
   #--------------------------------------------------------------
-  
-#    output$ImdbBudgetRating <- renderPlot({
-#      #data <- subset(data, {input$JahrRange[1]}<=data$year&data$year<={input$JahrRange[2]}&data[[input$Genre]]==1)
-#      varbr <- queryfunc(data, input$Genre, input$JahrRange[1], input$JahrRange[2],
-#                         input$LengthRange[1], input$LengthRange[2])
-#      fm <- lm(varbr$rating ~ varbr$budget)
-#      plot(varbr$budget, varbr$rating, xlim=c(0, 50000000))
-#      abline(fm, col = "red")
-#    })
-   
-  #--------------------------------------------------------------
-  
+  #
   output$ImdbJahreHaeufigkeit <- renderPlot({
-    #data <- subset(data, {input$JahrRange[1]}<=data$year&data$year<={input$JahrRange[2]}&data[[input$Genre]]==1)
     varbr <- queryfunc(data, input$Genre, input$JahrRange[1], input$JahrRange[2],
                        input$LengthRange[1], input$LengthRange[2],
                        input$RatingRange[1], input$RatingRange[2])
-    barplot(table(varbr$year))
+    barplot(table(varbr$year), xlab="Jahre", ylab="Filmanzahl", main="Jahre/Filmanzahl")
   })
   
-  
+  output$statFilmanzahl <- renderTable({
+    counter_decade <- rep(0,10)
+    for(i in 1:10){
+      filteredData <- yearFilter(data, decades[i], decades[i]+10)
+      counter_decade[i] <- nrow(filteredData)
+    }
+    
+    df <- data.frame(
+      Dekade=decades,
+      Summe=counter_decade
+    )
+  })
   #--------------------------------------------------------------   
    
   output$ImdbRatingHaeufigkeit <- renderTable({
   
     counterRating <- rep(0,10)
+    data_votesok <- subset(data, data$votes>=1000)
+    list_rating <- data_votesok$rating
     for(i in 1:nrow(data)){
-      list_rating <- data$rating
+      
       temp_rating <- round(list_rating[i])
       counterRating[temp_rating] <- counterRating[temp_rating]+1
     }
@@ -139,8 +141,8 @@ shinyServer(function(input, output) {
       rel_rating[i] <- counterRating[i]/nrow(data)
     }
     df <- data.frame(
-      absfrequency=counterRating,
-      relfrequency=rel_rating
+      Absolute_Häufigkeit=counterRating,
+      Relative_Häufigkeit=rel_rating
     )
   })
   
@@ -171,42 +173,6 @@ shinyServer(function(input, output) {
     sumlm <- summary(z)
   })
   #--------------------------------------------------------------
-  
-#   output$Analyse <- renderTable({
-#     model1 <- lm(data$rating ~ data$length + data$votes + data$length*data$votes)
-#     correlation <- cor(data$length, data$votes)
-#     df <- data.frame(
-#       temp=model1
-#     )
-#   })
-  #--------------------------------------------------------------
-   
-   #Analyse des Datensatzes hinsichtloch Durchschnitt, Median etc.
-#    output$textLength <- renderTable({
-#      filteredData <- queryfunc(data, input$Genre, input$JahrRange[1], input$JahrRange[2],
-#                                 input$LengthRange[1], input$LengthRange[2])
-#      meanLength <- mean(filteredData[["length"]])
-#      medianLength <- median(filteredData[["length"]])
-#      length <- c(meanLength, medianLength)
-#      
-#      meanRating <- mean(filteredData[["rating"]])
-#      medianRating <- median(filteredData[["rating"]])
-#      rating <- c(meanRating, medianRating)
-#      
-#      filteredDataBudget <- subset(filteredData, !is.na(filteredData$budget))
-#      meanBudget <- mean(filteredDataBudget[["budget"]])
-#      medianBudget <- median(filteredDataBudget[["budget"]])
-# #      budget <- c(meanBudget, medianBudget)
-# 
-#      analysisTable <-  matrix(c(meanLength, medianLength, 
-#                               meanRating, medianRating,
-#                               meanBudget,medianBudget),
-#                              ncol=2,byrow=TRUE)
-#        
-#      analysisTable <- as.table(analysisTable)
-# #      colnames(analysisTable) <- c("Mean", "Median")
-# #      rownames(analysisTable) <- c("Length", "Rating", "Budget")
-#      
-#    })
+
 
 })

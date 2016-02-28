@@ -42,15 +42,13 @@ shinyUI(fluidPage(
         tabPanel("Jahr/Budget", plotOutput("ImdbJahrBudget"),
                  "Durchschnittliches Budget des jeweiligen Jahrzehntes ist:", 
                  tableOutput("statBudget")),
-        tabPanel("Budget/Rating", plotOutput("ImdbBudgetRating")),
-        tabPanel("Jahre/Haeufigkeit", plotOutput("ImdbJahreHaeufigkeit")),
+        tabPanel("Jahr/Filmanzahl", plotOutput("ImdbJahreHaeufigkeit"),
+                  "Anzahl Filme des jeweiligen Jahrzehntes ist", 
+                  tableOutput("statFilmanzahl")),
         tabPanel("Rating/Haeufigkeit", tableOutput("ImdbRatingHaeufigkeit")),
         tabPanel("Analyse", tableOutput("AnalyseText"), plotOutput("AnalysePlot"))
       ),
       tags$hr()
-      #
-      #textOutput("budget")
-      #textOutput("genre"),
     )
     
   )
