@@ -1,11 +1,13 @@
 library(shiny)
 source("funcs.R")
 
+
 #Import Data, Define Possible Genres and transform the genres to Factors.
 data <- read.table("movies.tab", sep="\t", header=TRUE, quote="", comment="",fileEncoding="UTF-8")
 genres <- c("Action", "Animation", "Comedy", "Drama", "Documentary", "Romance", "Short")
 data <- factorfunc(data, genres)
 decades <- seq(1900, 1990, length.out=10)
+#Setzt das WD in den Überordner von "shinyapp", also in den Ordner Projekt
 
 shinyServer(function(input, output) {
   
@@ -104,14 +106,15 @@ shinyServer(function(input, output) {
   })
    
   #--------------------------------------------------------------
-  #
+  #Darstellung der Filme auf die Jahre verteilt. 
   output$ImdbJahreHaeufigkeit <- renderPlot({
     varbr <- queryfunc(data, input$Genre, input$JahrRange[1], input$JahrRange[2],
                        input$LengthRange[1], input$LengthRange[2],
                        input$RatingRange[1], input$RatingRange[2])
     barplot(table(varbr$year), xlab="Jahre", ylab="Filmanzahl", main="Jahre/Filmanzahl")
   })
-  
+  #Mit yearFilter werden die Filme pro Dekade gefiltert. nrow(filteredData) bestimmt die Zeilen der 1:10 Subsets.
+  #Und ermittelt somit die Zahl der Filme pro Dekade
   output$statFilmanzahl <- renderTable({
     counter_decade <- rep(0,10)
     for(i in 1:10){
@@ -125,7 +128,7 @@ shinyServer(function(input, output) {
     )
   })
   #--------------------------------------------------------------   
-   
+  #Es wird ermittelt, wie sich Filme mit >1000 Votes auf die Bewertungen verteilen
   output$ImdbRatingHaeufigkeit <- renderTable({
   
     counterRating <- rep(0,10)
@@ -147,12 +150,7 @@ shinyServer(function(input, output) {
   })
   
   #--------------------------------------------------------------
-  output$AnalyseCor <- renderText({
-    varan <- queryfunc(data, input$Genre)
-    output <- c(cor(varan$length, varan$votes), input$Genre, input$JahrRange[1], input$JahrRange[2],
-                input$RatingRange[1], input$RatingRange[2])
-  })
-
+  #Bildung des linearen Modells, zum einen der Plot und zum anderen die Tabelle, welche Standardfehler etc. darstellt
   output$AnalysePlot <- renderPlot({
     varan <- queryfunc(data, input$Genre)
     y <- varan$rating
